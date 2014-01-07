@@ -231,14 +231,14 @@ function roundRect(ctx, x, y, w, h, r)
             group.add(cube);
 
         });
-	var spritey = makeTextSprite( " Hello, ",
-		{borderThickness:6, fontsize: 100, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-	spritey.position.set(-5,-1,-5);
+	var spritey = makeTextSprite( " 2nd ",
+		{borderThickness:6, fontsize: 100, borderColor: {r:0, g:0, b:205, a:1.0}, backgroundColor: {r:200, g:200, b:200, a:0.8} } );
+	spritey.position.set(-2,5,-2);
 	scene.add( spritey );
 
-	var spritey = makeTextSprite( " World! ",
+	var spritey = makeTextSprite( " 1st ",
 		{ fontsize: 100, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-	spritey.position.set(0,1,1);
+	spritey.position.set(-2,0,-2);
 	scene.add( spritey );
         // call the render function
         scene.add(group);
