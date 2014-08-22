@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
     <title>Example 04.05 - Mesh face material</title>
     <script type="text/javascript" src="libs/three.js"></script>
@@ -31,58 +29,50 @@
 <script type="text/javascript">
     function makeTextSprite( message, parameters )
 {
-	if ( parameters === undefined ) parameters = {};
+    if ( parameters === undefined ) parameters = {};
+    var fontface = parameters.hasOwnProperty("fontface") ?
+        parameters["fontface"] : "Arial";
+    var fontsize = parameters.hasOwnProperty("fontsize") ?
+        parameters["fontsize"] : 18;
+    var borderThickness = parameters.hasOwnProperty("borderThickness") ?
+        parameters["borderThickness"] : 4;
+    var borderColor = parameters.hasOwnProperty("borderColor") ?
+        parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+    var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+        parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+    var spriteAlignment = THREE.SpriteAlignment.topLeft;
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.font = "Bold " + fontsize + "px " + fontface;
+    // get size data (height depends only on font size)
+    var metrics = context.measureText( message );
+    var textWidth = metrics.width;
 
-	var fontface = parameters.hasOwnProperty("fontface") ?
-		parameters["fontface"] : "Arial";
+    // background color
+    context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+                                  + backgroundColor.b + "," + backgroundColor.a + ")";
+    // border color
+    context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+                                  + borderColor.b + "," + borderColor.a + ")";
 
-	var fontsize = parameters.hasOwnProperty("fontsize") ?
-		parameters["fontsize"] : 18;
+    context.lineWidth = borderThickness;
+    roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+    // 1.4 is extra height factor for text below baseline: g,j,p,q.
 
-	var borderThickness = parameters.hasOwnProperty("borderThickness") ?
-		parameters["borderThickness"] : 4;
+    // text color
+    context.fillStyle = "rgba(0, 0, 0, 1.0)";
 
-	var borderColor = parameters.hasOwnProperty("borderColor") ?
-		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+    context.fillText( message, borderThickness, fontsize + borderThickness);
 
-	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
-		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+    // canvas contents will be used for a texture
+    var texture = new THREE.Texture(canvas)
+    texture.needsUpdate = true;
 
-	var spriteAlignment = THREE.SpriteAlignment.topLeft;
-
-	var canvas = document.createElement('canvas');
-	var context = canvas.getContext('2d');
-	context.font = "Bold " + fontsize + "px " + fontface;
-
-	// get size data (height depends only on font size)
-	var metrics = context.measureText( message );
-	var textWidth = metrics.width;
-
-	// background color
-	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
-								  + backgroundColor.b + "," + backgroundColor.a + ")";
-	// border color
-	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
-								  + borderColor.b + "," + borderColor.a + ")";
-
-	context.lineWidth = borderThickness;
-	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
-	// 1.4 is extra height factor for text below baseline: g,j,p,q.
-
-	// text color
-	context.fillStyle = "rgba(0, 0, 0, 1.0)";
-
-	context.fillText( message, borderThickness, fontsize + borderThickness);
-
-	// canvas contents will be used for a texture
-	var texture = new THREE.Texture(canvas)
-	texture.needsUpdate = true;
-
-	var spriteMaterial = new THREE.SpriteMaterial(
-		{ map: texture, useScreenCoordinates: false, alignment: spriteAlignment } );
-	var sprite = new THREE.Sprite( spriteMaterial );
-	sprite.scale.set(2,1,1.0);
-	return sprite;
+    var spriteMaterial = new THREE.SpriteMaterial(
+        { map: texture, useScreenCoordinates: false, alignment: spriteAlignment } );
+    var sprite = new THREE.Sprite( spriteMaterial );
+    sprite.scale.set(2,1,1.0);
+    return sprite;
 }
 
 // function for drawing rounded rectangles
@@ -100,7 +90,7 @@ function roundRect(ctx, x, y, w, h, r)
     ctx.quadraticCurveTo(x, y, x+r, y);
     ctx.closePath();
     ctx.fill();
-	ctx.stroke();
+    ctx.stroke();
 }
     // once everything is loaded, we run our Three.js stuff.
     $(function () {
@@ -206,15 +196,13 @@ function roundRect(ctx, x, y, w, h, r)
         mats.push(new THREE.MeshBasicMaterial({ color: 0xC41E3A, transparent: true, opacity: opacity }));
         mats.push(new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: opacity }));
         var faceMaterial = new THREE.MeshFaceMaterial(mats);
-
-
         var mapdata = [
             {'x':0, 'y':0,'z':0,'dx':1,'dy':1,'dz':1},
             {'x':1, 'y':0,'z':0,'dx':4,'dy':2,'dz':3},
             {'x':6, 'y':0,'z':0,'dx':5,'dy':7,'dz':4},
             {'x':6, 'y':0,'z':5,'dx':5,'dy':7,'dz':4},
             {'x':6, 'y':0,'z':10,'dx':5,'dy':7,'dz':1},
-            {'x':12, 'y':-1,'z':0,'dx':5,'dy':9,'dz':5}
+            {'x':12,'y':-1,'z':0,'dx':5,'dy':9,'dz':5}
         ]
         _.map(mapdata, function(data){
             var cubeGeom = new THREE.CubeGeometry(
@@ -229,36 +217,31 @@ function roundRect(ctx, x, y, w, h, r)
                     data.y + 0.5 * data.dy
             );
             group.add(cube);
-
         });
-	var spritey = makeTextSprite( " 2nd ",
-		{borderThickness:6, fontsize: 100, borderColor: {r:0, g:0, b:205, a:1.0}, backgroundColor: {r:200, g:200, b:200, a:0.8} } );
-	spritey.position.set(-2,5,-2);
-	scene.add( spritey );
+    var spritey = makeTextSprite( " 2nd ",
+        {borderThickness:6, fontsize: 100, borderColor: {r:0, g:0, b:205, a:1.0}, backgroundColor: {r:200, g:200, b:200, a:0.8} } );
+    spritey.position.set(-2,5,-2);
+    scene.add( spritey );
 
-	var spritey = makeTextSprite( " 1st ",
-		{ fontsize: 100, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-	spritey.position.set(-2,0,-2);
-	scene.add( spritey );
+    var spritey = makeTextSprite( " 1st ",
+        { fontsize: 100, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+    spritey.position.set(-2,0,-2);
+    scene.add( spritey );
         // call the render function
         scene.add(group);
         var step = 0;
-
         var controls = new function () {
             this.rotationSpeed = 0.02;
             this.numberOfObjects = scene.children.length;
-        }
-
+        };
         var gui = new dat.GUI();
         gui.add(controls, 'rotationSpeed', 0, 0.5);
-
         render();
 
         function  render() {
             stats.update();
             var delta = clock.getDelta();
             trackballControls.update(delta);
-
 //            group.rotation.y = step += 0.01;
             // render using requestAnimationFrame
             requestAnimationFrame(render);
@@ -266,12 +249,8 @@ function roundRect(ctx, x, y, w, h, r)
         }
 
         function initStats() {
-
             var stats = new Stats();
-
             stats.setMode(0); // 0: fps, 1: ms
-
-
             // Align top-left
             stats.domElement.style.position = 'absolute';
             stats.domElement.style.left = '0px';
@@ -282,8 +261,6 @@ function roundRect(ctx, x, y, w, h, r)
             return stats;
         }
     });
-
-
 </script>
 </body>
 </html>
