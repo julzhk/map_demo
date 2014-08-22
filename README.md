@@ -1,4 +1,4 @@
-map_demo
+A 3D map demo
 ========
 
-three.js map
+Using three.js to render a map in three dimensions. 
